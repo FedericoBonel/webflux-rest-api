@@ -3,10 +3,8 @@ package com.federicobonel.webfluxrestapi.controllers.v1;
 import com.federicobonel.webfluxrestapi.model.Vendor;
 import com.federicobonel.webfluxrestapi.services.VendorService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -24,6 +22,7 @@ public class VendorController {
     }
 
     @GetMapping
+    @ResponseStatus(HttpStatus.OK)
     public Flux<Vendor> getAll() {
         log.info("Getting all vendors");
 
@@ -31,6 +30,7 @@ public class VendorController {
     }
 
     @GetMapping("/{vendorId}")
+    @ResponseStatus(HttpStatus.OK)
     public Mono<Vendor> getById(@PathVariable String vendorId) {
         log.info("Getting vendor by id");
 

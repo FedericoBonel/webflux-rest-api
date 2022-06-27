@@ -20,7 +20,7 @@ class VendorControllerTest {
     public static final String ID = "id1234";
     public static final String NAME = "Walmart St. Main Street 1234";
     public static final Integer NUMBER_OF_VENDORS = 3;
-    public static final String VENDOR_URL = CustomerController.CUSTOMER_URL + "/" + ID;
+    public static final String VENDOR_URL = VendorController.VENDORS_URL + "/" + ID;
 
     Vendor vendor;
     Flux<Vendor> vendors;
@@ -55,6 +55,7 @@ class VendorControllerTest {
         webTestClient.get()
                 .uri(VendorController.VENDORS_URL)
                 .exchange()
+                .expectStatus().isOk()
                 .expectBodyList(Vendor.class)
                 .hasSize(NUMBER_OF_VENDORS);
     }
@@ -66,6 +67,7 @@ class VendorControllerTest {
         webTestClient.get()
                 .uri(VENDOR_URL)
                 .exchange()
+                .expectStatus().isOk()
                 .expectBody(Vendor.class);
     }
 }

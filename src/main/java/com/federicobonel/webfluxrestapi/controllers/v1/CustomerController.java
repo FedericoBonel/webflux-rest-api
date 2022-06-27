@@ -3,10 +3,9 @@ package com.federicobonel.webfluxrestapi.controllers.v1;
 import com.federicobonel.webfluxrestapi.model.Customer;
 import com.federicobonel.webfluxrestapi.services.CustomerService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.reactivestreams.Publisher;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -24,6 +23,7 @@ public class CustomerController {
     }
 
     @GetMapping
+    @ResponseStatus(HttpStatus.OK)
     public Flux<Customer> getAll() {
         log.info("Getting all customers");
 
@@ -31,9 +31,18 @@ public class CustomerController {
     }
 
     @GetMapping("/{customerId}")
+    @ResponseStatus(HttpStatus.OK)
     public Mono<Customer> getById(@PathVariable String customerId) {
         log.info("Getting customer by id: " + customerId);
 
         return customerService.getById(customerId);
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public Mono<Void> createCustomer(@RequestBody Publisher<Customer> customersToSave) {
+        log.info("Saving customers");
+
+        return customerService.saveAll(customersToSave).then();
     }
 }

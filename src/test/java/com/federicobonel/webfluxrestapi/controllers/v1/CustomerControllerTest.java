@@ -1,5 +1,6 @@
 package com.federicobonel.webfluxrestapi.controllers.v1;
 
+import com.federicobonel.webfluxrestapi.model.Category;
 import com.federicobonel.webfluxrestapi.model.Customer;
 import com.federicobonel.webfluxrestapi.services.CustomerService;
 import org.junit.jupiter.api.BeforeEach;
@@ -7,11 +8,13 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.reactivestreams.Publisher;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 class CustomerControllerTest {
@@ -55,6 +58,7 @@ class CustomerControllerTest {
         webTestClient.get()
                 .uri(CustomerController.CUSTOMER_URL)
                 .exchange()
+                .expectStatus().isOk()
                 .expectBodyList(Customer.class)
                 .hasSize(NUMBER_OF_CUSTOMERS);
     }
@@ -66,7 +70,19 @@ class CustomerControllerTest {
         webTestClient.get()
                 .uri(CUSTOMER_URL)
                 .exchange()
+                .expectStatus().isOk()
                 .expectBody(Customer.class);
 
+    }
+
+    @Test
+    void createCustomer() {
+        given(customerService.saveAll(any(Publisher.class))).willReturn(customers);
+
+        webTestClient.post()
+                .uri(CustomerController.CUSTOMER_URL)
+                .body(customers, Customer.class)
+                .exchange()
+                .expectStatus().isCreated();
     }
 }

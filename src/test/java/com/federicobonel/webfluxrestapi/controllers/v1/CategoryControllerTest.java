@@ -7,9 +7,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.reactivestreams.Publisher;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.concurrent.Flow;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -53,6 +56,7 @@ class CategoryControllerTest {
         webTestClient.get()
                 .uri(CategoryController.CATEGORY_URL)
                 .exchange()
+                .expectStatus().isOk()
                 .expectBodyList(Category.class)
                 .hasSize(NUMBER_OF_CATEGORIES);
     }
@@ -64,6 +68,18 @@ class CategoryControllerTest {
         webTestClient.get()
                 .uri(CATEGORY_URL)
                 .exchange()
+                .expectStatus().isOk()
                 .expectBody(Category.class);
+    }
+
+    @Test
+    void createCategory() {
+        given(categoryService.saveAll(any(Publisher.class))).willReturn(categories);
+
+        webTestClient.post()
+                .uri(CategoryController.CATEGORY_URL)
+                .body(categories, Category.class)
+                .exchange()
+                .expectStatus().isCreated();
     }
 }

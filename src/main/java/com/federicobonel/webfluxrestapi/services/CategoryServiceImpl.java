@@ -1,8 +1,10 @@
 package com.federicobonel.webfluxrestapi.services;
 
+import com.federicobonel.webfluxrestapi.exceptions.CouldNotSave;
 import com.federicobonel.webfluxrestapi.exceptions.ResourceNotFoundException;
 import com.federicobonel.webfluxrestapi.model.Category;
 import com.federicobonel.webfluxrestapi.repositories.CategoryRepository;
+import org.reactivestreams.Publisher;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -26,4 +28,12 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryRepository.findById(id)
                 .switchIfEmpty(Mono.error(ResourceNotFoundException::new));
     }
+
+    @Override
+    public Flux<Category> saveAll(Publisher<Category> categories) {
+        return categoryRepository.saveAll(categories)
+                .switchIfEmpty(Flux.error(CouldNotSave::new));
+    }
+
+
 }
