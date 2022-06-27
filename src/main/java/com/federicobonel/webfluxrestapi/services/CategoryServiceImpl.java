@@ -35,5 +35,16 @@ public class CategoryServiceImpl implements CategoryService {
                 .switchIfEmpty(Flux.error(CouldNotSave::new));
     }
 
+    @Override
+    public Mono<Category> putById(String id, Mono<Category> category) {
+        return category
+                .map(categoryObject -> {
+                    categoryObject.setId(id);
+                    return categoryObject;
+                })
+                .flatMap(categoryRepository::save)
+                .switchIfEmpty(Mono.error(CouldNotSave::new));
+    }
+
 
 }

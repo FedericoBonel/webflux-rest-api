@@ -47,4 +47,11 @@ public class CategoryController {
     }
 
 
+    @PutMapping("/{categoryId}")
+    @ResponseStatus(HttpStatus.OK)
+    public Mono<Category> putCategoryById(@PathVariable String categoryId, @RequestBody Mono<Category> category) {
+        log.info("Replacing data for category  with id: " + categoryId);
+
+        return categoryService.putById(categoryId, category);
+    }
 }

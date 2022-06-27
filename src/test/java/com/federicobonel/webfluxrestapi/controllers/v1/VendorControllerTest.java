@@ -9,10 +9,13 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.reactivestreams.Publisher;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
 class VendorControllerTest {
@@ -22,7 +25,7 @@ class VendorControllerTest {
     public static final Integer NUMBER_OF_VENDORS = 3;
     public static final String VENDOR_URL = VendorController.VENDORS_URL + "/" + ID;
 
-    Vendor vendor;
+    Mono<Vendor> vendor;
     Flux<Vendor> vendors;
 
     @Mock
@@ -38,9 +41,10 @@ class VendorControllerTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        vendor = new Vendor();
-        vendor.setId(ID);
-        vendor.setName(NAME);
+        Vendor vendorInstance = new Vendor();
+        vendorInstance.setId(ID);
+        vendorInstance.setName(NAME);
+        vendor = Mono.just(vendorInstance);
 
         vendors = Flux.just(new Vendor(), new Vendor(), new Vendor());
 
@@ -62,12 +66,34 @@ class VendorControllerTest {
 
     @Test
     void getById() {
-        given(vendorService.getById(ID)).willReturn(Mono.just(vendor));
+        given(vendorService.getById(ID)).willReturn(vendor);
 
         webTestClient.get()
                 .uri(VENDOR_URL)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(Vendor.class);
+    }
+
+    @Test
+    void createVendor() {
+        given(vendorService.saveAll(any(Publisher.class))).willReturn(vendors);
+
+        webTestClient.post()
+                .uri(VendorController.VENDORS_URL)
+                .body(vendors, Vendor.class)
+                .exchange()
+                .expectStatus().isCreated();
+    }
+
+    @Test
+    void putVendor() {
+        given(vendorService.putById(anyString(), any(Mono.class))).willReturn(vendor);
+
+        webTestClient.put()
+                .uri(VENDOR_URL)
+                .body(vendor, Vendor.class)
+                .exchange()
+                .expectStatus().isOk();
     }
 }

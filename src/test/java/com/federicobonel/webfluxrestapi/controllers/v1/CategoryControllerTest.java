@@ -25,7 +25,7 @@ class CategoryControllerTest {
     public static final Integer NUMBER_OF_CATEGORIES = 3;
     public static final String CATEGORY_URL = CategoryController.CATEGORY_URL + "/" + ID;
 
-    Category category;
+    Mono<Category> category;
     Flux<Category> categories;
 
     WebTestClient webTestClient;
@@ -42,9 +42,11 @@ class CategoryControllerTest {
 
         webTestClient = WebTestClient.bindToController(categoryController).build();
 
-        category = new Category();
-        category.setId(ID);
-        category.setName(NAME);
+        Category categoryInstance = new Category();
+        categoryInstance.setId(ID);
+        categoryInstance.setName(NAME);
+
+        category = Mono.just(categoryInstance);
 
         categories = Flux.just(new Category(), new Category(), new Category());
     }
@@ -63,7 +65,7 @@ class CategoryControllerTest {
 
     @Test
     void getById() {
-        given(categoryService.getById(ID)).willReturn(Mono.just(category));
+        given(categoryService.getById(ID)).willReturn(category);
 
         webTestClient.get()
                 .uri(CATEGORY_URL)
@@ -81,5 +83,16 @@ class CategoryControllerTest {
                 .body(categories, Category.class)
                 .exchange()
                 .expectStatus().isCreated();
+    }
+
+    @Test
+    void putCategoryById() {
+        given(categoryService.putById(anyString(), any(Mono.class))).willReturn(category);
+
+        webTestClient.put()
+                .uri(CATEGORY_URL)
+                .body(category, Category.class)
+                .exchange()
+                .expectStatus().isOk();
     }
 }
