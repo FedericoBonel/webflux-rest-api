@@ -95,4 +95,15 @@ class CategoryControllerTest {
                 .exchange()
                 .expectStatus().isOk();
     }
+
+    @Test
+    void patchCategoryById() {
+        given(categoryService.patchById(anyString(), any(Mono.class))).willReturn(category);
+
+        webTestClient.patch()
+                .uri(CATEGORY_URL)
+                .body(category, Category.class)
+                .exchange()
+                .expectStatus().isOk();
+    }
 }

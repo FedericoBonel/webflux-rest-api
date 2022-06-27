@@ -15,4 +15,5 @@ public interface VendorService {
 
     Mono<Vendor> putById(String id, Mono<Vendor> vendor);
 
+    Mono<Vendor> patchById(String id, Mono<Vendor> vendor);
 }

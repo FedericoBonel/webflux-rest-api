@@ -53,4 +53,12 @@ public class VendorController {
 
         return vendorService.putById(vendorId, vendor);
     }
+
+    @PatchMapping("/{vendorId}")
+    @ResponseStatus(HttpStatus.OK)
+    public Mono<Vendor> patchVendorById(@PathVariable String vendorId, @RequestBody Mono<Vendor> vendor) {
+        log.info("Updating vendor with id: " + vendorId);
+
+        return vendorService.patchById(vendorId, vendor);
+    }
 }

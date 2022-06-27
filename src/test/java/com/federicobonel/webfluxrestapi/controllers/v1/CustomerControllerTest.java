@@ -98,4 +98,15 @@ class CustomerControllerTest {
                 .exchange()
                 .expectStatus().isOk();
     }
+
+    @Test
+    void patchById() {
+        given(customerService.patchById(anyString(), any(Mono.class))).willReturn(customer);
+
+        webTestClient.patch()
+                .uri(CUSTOMER_URL)
+                .body(customer, Customer.class)
+                .exchange()
+                .expectStatus().isOk();
+    }
 }

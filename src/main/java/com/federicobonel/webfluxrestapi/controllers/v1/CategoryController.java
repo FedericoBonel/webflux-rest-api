@@ -54,4 +54,12 @@ public class CategoryController {
 
         return categoryService.putById(categoryId, category);
     }
+
+    @PatchMapping("/{categoryId}")
+    @ResponseStatus(HttpStatus.OK)
+    public Mono<Category> patchCategoryById(@PathVariable String categoryId, @RequestBody Mono<Category> category) {
+        log.info("Updating category with id: " + categoryId);
+
+        return categoryService.patchById(categoryId, category);
+    }
 }

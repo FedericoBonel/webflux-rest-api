@@ -15,4 +15,6 @@ public interface CategoryService {
 
     Mono<Category> putById(String id, Mono<Category> category);
 
+    Mono<Category> patchById(String id, Mono<Category> category);
+
 }

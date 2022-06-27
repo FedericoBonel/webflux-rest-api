@@ -15,4 +15,5 @@ public interface CustomerService {
 
     Mono<Customer> putById(String id, Mono<Customer> customer);
 
+    Mono<Customer> patchById(String id, Mono<Customer> customer);
 }

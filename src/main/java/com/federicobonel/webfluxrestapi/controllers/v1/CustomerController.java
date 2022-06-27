@@ -51,6 +51,14 @@ public class CustomerController {
     public Mono<Customer> putCustomer(@PathVariable String customerId, @RequestBody Mono<Customer> customer) {
         log.info("Replacing data for customer with id: " + customerId);
 
-        return  customerService.putById(customerId, customer);
+        return customerService.putById(customerId, customer);
+    }
+
+    @PatchMapping("/{customerId}")
+    @ResponseStatus(HttpStatus.OK)
+    public Mono<Customer> patchCustomer(@PathVariable String customerId, @RequestBody Mono<Customer> customer) {
+        log.info("Updating customer with id: " + customerId);
+
+        return customerService.patchById(customerId, customer);
     }
 }

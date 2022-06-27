@@ -96,4 +96,15 @@ class VendorControllerTest {
                 .exchange()
                 .expectStatus().isOk();
     }
+
+    @Test
+    void patchVendor() {
+        given(vendorService.patchById(anyString(), any(Mono.class))).willReturn(vendor);
+
+        webTestClient.patch()
+                .uri(VENDOR_URL)
+                .body(vendor, Vendor.class)
+                .exchange()
+                .expectStatus().isOk();
+    }
 }

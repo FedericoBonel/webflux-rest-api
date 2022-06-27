@@ -45,4 +45,28 @@ public class CustomerServiceImpl implements CustomerService {
                 .flatMap(customerRepository::save)
                 .switchIfEmpty(Mono.error(CouldNotSave::new));
     }
+
+    @Override
+    public Mono<Customer> patchById(String id, Mono<Customer> customer) {
+        return customerRepository.findById(id)
+                .zipWith(customer)
+                .map(customers -> {
+                    Customer saved = customers.getT1();
+                    Customer newer = customers.getT2();
+
+                    if (saved.getFirstname() == null
+                            || !saved.getFirstname().equals(newer.getFirstname()) && newer.getFirstname() != null) {
+                        saved.setFirstname(newer.getFirstname());
+                    }
+
+                    if (saved.getLastname() == null
+                            || !saved.getLastname().equals(newer.getLastname()) && newer.getLastname() != null) {
+                        saved.setLastname(newer.getLastname());
+                    }
+
+                    return saved;
+                })
+                .flatMap(customerRepository::save)
+                .switchIfEmpty(Mono.error(CouldNotSave::new));
+    }
 }

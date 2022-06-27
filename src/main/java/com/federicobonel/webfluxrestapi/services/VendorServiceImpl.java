@@ -44,4 +44,24 @@ public class VendorServiceImpl implements VendorService {
                 }).flatMap(vendorRepository::save)
                 .switchIfEmpty(Mono.error(CouldNotSave::new));
     }
+
+    @Override
+    public Mono<Vendor> patchById(String id, Mono<Vendor> vendor) {
+        return vendorRepository.findById(id)
+                .switchIfEmpty(Mono.error(ResourceNotFoundException::new))
+                .zipWith(vendor)
+                .map(vendors -> {
+                    Vendor saved = vendors.getT1();
+                    Vendor newer = vendors.getT2();
+
+                    if (saved.getName() == null || !saved.getName().equals(newer.getName()) && newer.getName() != null) {
+                        saved.setName(newer.getName());
+                    }
+
+                    return saved;
+                })
+                .flatMap(vendorRepository::save)
+                .switchIfEmpty(Mono.error(CouldNotSave::new));
+
+    }
 }

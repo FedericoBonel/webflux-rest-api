@@ -46,5 +46,24 @@ public class CategoryServiceImpl implements CategoryService {
                 .switchIfEmpty(Mono.error(CouldNotSave::new));
     }
 
+    @Override
+    public Mono<Category> patchById(String id, Mono<Category> category) {
+        return categoryRepository.findById(id)
+                .switchIfEmpty(Mono.error(ResourceNotFoundException::new))
+                .zipWith(category)
+                .map(categories -> {
+                    Category saved = categories.getT1();
+                    Category newer = categories.getT2();
+
+                    if (saved.getName() == null || newer.getName() != null && !saved.getName().equals(newer.getName())) {
+                        saved.setName(newer.getName());
+                    }
+
+                    return saved;
+                })
+                .flatMap(categoryRepository::save)
+                .switchIfEmpty(Mono.error(CouldNotSave::new));
+    }
+
 
 }
