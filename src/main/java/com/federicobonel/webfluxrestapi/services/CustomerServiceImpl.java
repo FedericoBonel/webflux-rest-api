@@ -34,4 +34,15 @@ public class CustomerServiceImpl implements CustomerService {
         return customerRepository.saveAll(customers)
                 .switchIfEmpty(Flux.error(CouldNotSave::new));
     }
+
+    @Override
+    public Mono<Customer> putById(String id, Mono<Customer> customer) {
+        return customer
+                .map(customerObject -> {
+                    customerObject.setId(id);
+                    return customerObject;
+                })
+                .flatMap(customerRepository::save)
+                .switchIfEmpty(Mono.error(CouldNotSave::new));
+    }
 }

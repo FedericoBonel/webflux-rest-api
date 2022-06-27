@@ -45,4 +45,12 @@ public class CustomerController {
 
         return customerService.saveAll(customersToSave).then();
     }
+
+    @PutMapping("/{customerId}")
+    @ResponseStatus(HttpStatus.OK)
+    public Mono<Customer> putCustomer(@PathVariable String customerId, @RequestBody Mono<Customer> customer) {
+        log.info("Replacing data for customer with id: " + customerId);
+
+        return  customerService.putById(customerId, customer);
+    }
 }

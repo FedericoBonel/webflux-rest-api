@@ -15,6 +15,7 @@ import reactor.core.publisher.Mono;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
 class CustomerControllerTest {
@@ -25,7 +26,7 @@ class CustomerControllerTest {
     public static final Integer NUMBER_OF_CUSTOMERS = 3;
     public static final String CUSTOMER_URL = CustomerController.CUSTOMER_URL + "/" + ID;
 
-    Customer customer;
+    Mono<Customer> customer;
     Flux<Customer> customers;
 
     @Mock
@@ -41,10 +42,11 @@ class CustomerControllerTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        customer = new Customer();
-        customer.setId(ID);
-        customer.setFirstname(FIRST_NAME);
-        customer.setLastname(LAST_NAME);
+        Customer customerInstance = new Customer();
+        customerInstance.setId(ID);
+        customerInstance.setFirstname(FIRST_NAME);
+        customerInstance.setLastname(LAST_NAME);
+        customer = Mono.just(customerInstance);
 
         customers = Flux.just(new Customer(), new Customer(), new Customer());
 
@@ -65,7 +67,7 @@ class CustomerControllerTest {
 
     @Test
     void getById() {
-        given(customerService.getById(ID)).willReturn(Mono.just(customer));
+        given(customerService.getById(ID)).willReturn(customer);
 
         webTestClient.get()
                 .uri(CUSTOMER_URL)
@@ -84,5 +86,16 @@ class CustomerControllerTest {
                 .body(customers, Customer.class)
                 .exchange()
                 .expectStatus().isCreated();
+    }
+
+    @Test
+    void putById() {
+        given(customerService.putById(anyString(), any(Mono.class))).willReturn(customer);
+
+        webTestClient.put()
+                .uri(CUSTOMER_URL)
+                .body(customer, Customer.class)
+                .exchange()
+                .expectStatus().isOk();
     }
 }

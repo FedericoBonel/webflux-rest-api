@@ -13,4 +13,6 @@ public interface CustomerService {
 
     Flux<Customer> saveAll(Publisher<Customer> customers);
 
+    Mono<Customer> putById(String id, Mono<Customer> customer);
+
 }
